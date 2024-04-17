@@ -1,0 +1,105 @@
+---
+title: "ds_18_coursework"
+output:
+  pdf_document: default
+  html_document: default
+date: "2023-11-30"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+We will work on a dataset containing a large subset of the human proteome, for each protein you are given its sequence, length, mass, and subcellular location (when available).
+
+First, we import the file:
+```{r}
+library(readr)
+df <- readr::read_csv("~/Downloads/uniref_merged.csv")
+df
+```
+
+Next, we compute the number of each aminoacids from the sequence:
+```{r}
+library(stringr)
+aminoacids <- unique(strsplit(paste(df$Sequence, sep="", collapse=""), '')[[1]])
+# What aminoacids did we find? (You may note something quite interesting here...)
+print(aminoacids)
+for (c in aminoacids) {
+  df[c] <- str_count(df$Sequence, c)
+}
+# Did we miss any amino acids?
+all(apply(df[aminoacids], 1, sum) == df$Length)
+```
+
+
+Let's plot that!
+```{r}
+library(tidyr)
+library(ggplot2)
+pivot_longer(df[aminoacids], cols=aminoacids) %>%
+ggplot(aes(x=name, y=value, fill=name)) +
+  geom_boxplot()
+```
+
+Let's try a simple prediction, the mass as a function of the number of alanines:
+
+
+```{r}
+dfa <- df[c(aminoacids,"Mass")]
+df.lm <- lm(Mass ~ A, dfa)
+summary(df.lm)
+```
+
+We can now print the model, and check the coefficients:
+```{r}
+plot(dfa$Mass, predict(df.lm))
+abline(a=1,b=1, col="red")
+```
+Can you make a near-perfect predictor for the mass, given the aminoacids count? (OK: R-squared > 0.9, Full credit: R-squared > 0.99):
+```{r}
+
+```
+
+Split your data in a training and test set, and compute a summary statistic for the predictor quality:
+```{r}
+
+```
+
+
+Our dataset also contains the subcellular location of proteins, stored as true/false values in the following columns: Golgi, Membrane, Extracellular, Endoplasmic Reticulum, Nucleus, Cytoplasm.
+
+Can you create a plot showing the relationship between sequence length and subcellular location?
+```{r}
+
+```
+
+Can you create a plot relating bias in sequence composition to subcellular location?
+```{r}
+
+```
+
+Next, try to make a predictor for the subcellular location, given the sequence. (hint: start with the aminoacid counts!).
+For full credit, your method should be able to predict multiple possible locations (with a precision greater than 0.2).
+```{r}
+
+```
+
+Show the results of your predictions using a plot, and appropriate statistics. Are all the categories predicted with the same accuracy?
+For full credit, the evaluation should be done on a test set separate from your training set.
+```{r}
+
+```
+
+Finally, export your results.
+For each predictor, export:
+- a file with the real values, predicted values, and identifying information for each sample (each column should be appropriately labelled)
+- a file with summary statistics, across predicted categories.
+- a plot showcasing the prediction accuracy.
+```{r}
+
+```
+
+
+For full credit, create an R shiny app, loading the exported files from the last step, and creating plots from it.
+Do not attempt this unless you have successfully completed all the previous step!
