@@ -1,0 +1,1 @@
+Work submitted as Coursework 1 for the Birkbeck Statistics and Datascience module. Contains answers to questions around hypothesis testing, boxplot creation, chi squared testing, correlation plots, and multiple linear regression in R.
